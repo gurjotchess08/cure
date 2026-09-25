@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CURE — Rural Healthcare Continuity Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --paper: #F1F3EC;
+    --panel: #FFFFFF;
+    --ink: #1B2430;
+    --muted: #6B655B;
+    --thread: #2B6E6E;
+    --thread-dark: #1F5252;
+    --thread-bg: #E1EEEE;
+    --marigold: #E8A33D;
+    --clay: #B3492F;
+    --clay-bg: #F6E6E1;
+    --green: #3C7A52;
+    --green-bg: #E4F0E8;
+    --alert: #A32020;
+    --alert-bg: #F8DCDC;
+    --rule: #DCDACC;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3{
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  button{ font-family: inherit; }
+
+  :focus-visible{
+    outline: 3px solid var(--thread);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ---------------- Top bar ---------------- */
+  header{
+    background: var(--ink);
+    color: #EFEAE0;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .header-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  header .brand{
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  header .brand small{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: #A9B3AE;
+    font-weight: 400;
+  }
+  .lang-toggle{
+    display: flex;
+    gap: 4px;
+    background: #29323F;
+    padding: 3px;
+    border-radius: 8px;
+  }
+  .lang-btn{
+    border: none;
+    background: transparent;
+    color: #C9CFC8;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .lang-btn.active{ background: var(--marigold); color: #2A1E08; }
+
+  .tabs{
+    display: flex;
+    gap: 4px;
+    background: #29323F;
+    padding: 4px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+  }
+  .tab-btn{
+    border: none;
+    background: transparent;
+    color: #C9CFC8;
+    padding: 10px 16px;
+    min-height: 40px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .tab-btn.active{
+    background: var(--thread);
+    color: #fff;
+  }
+
+  main{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 34px 24px 90px;
+  }
+
+  .view{ display: none; }
+  .view.active{ display: block; }
+
+  .lede{ color: var(--muted); margin-top: 8px; max-width: 60ch; }
+
+  /* ---------------- Cards / panels ---------------- */
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 26px;
+    margin-top: 24px;
+  }
+  .panel h3{ font-size: 20px; margin-bottom: 4px; }
+  .panel .hint{ color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+  .panel.alert{ background: var(--alert-bg); border-color: #E6B8B8; }
+  .panel.alert h3{ color: var(--alert); }
+
+  /* ---------------- Form ---------------- */
+  .field{ margin-bottom: 16px; }
+  .field label{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea{
+    width: 100%;
+    min-height: 46px;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .field textarea{ min-height: 72px; resize: vertical; }
+  .row2{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px){ .row2{ grid-template-columns: 1fr; } }
+
+  .checkline{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--paper);
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .checkline input{ width: 18px; height: 18px; }
+  .checkline label{ font-size: 15px; font-weight: 500; margin: 0; }
+
+  .subfields{ display: none; padding: 14px; background: var(--clay-bg); border-radius: 10px; margin-bottom: 16px; }
+  .subfields.show{ display: block; }
+
+  .triage-box{ padding: 14px; background: var(--paper); border: 1.5px solid var(--rule); border-radius: 10px; margin-bottom: 16px; }
+  .triage-box .sign{ display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14.5px; }
+  .triage-box .sign input{ width: 18px; height: 18px; }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary{ background: var(--thread); color: #fff; }
+  .btn-primary:hover{ background: var(--thread-dark); }
+  .btn-ghost{ background: transparent; border: 1.5px solid var(--rule); color: var(--ink); }
+  .btn-small{ min-height: 36px; padding: 0 14px; font-size: 13px; }
+  .btn-complete{ background: var(--green); color: #fff; }
+  .btn-complete:hover{ background: #2f6342; }
+  .btn-alert{ background: var(--alert); color: #fff; }
+  .btn-alert:hover{ background: #841919; }
+
+  /* ---------------- Stat cards ---------------- */
+  .stats{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  @media (max-width: 700px){ .stats{ grid-template-columns: 1fr 1fr; } }
+  .stat{
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .stat .num{ font-family: 'Fraunces', serif; font-size: 32px; color: var(--thread); }
+  .stat.is-alert .num{ color: var(--alert); }
+  .stat .lbl{ font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ---------------- Lists / tables ---------------- */
+  .list-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .list-item:first-child{ border-top: none; }
+  .li-main{ flex: 1; min-width: 200px; }
+  .li-name{ font-weight: 600; }
+  .li-sub{ font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+  .li-actions{ display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill{
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+  }
+  .pill-pending{ background: var(--clay-bg); color: var(--clay); }
+  .pill-done{ background: var(--green-bg); color: var(--green); }
+  .pill-risk{ background: #FCEFD8; color: #96631A; }
+  .pill-progress{ background: var(--thread-bg); color: var(--thread-dark); }
+  .pill-alert{ background: var(--alert-bg); color: var(--alert); }
+
+  .empty{
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+    font-size: 14.5px;
+  }
+
+  details.patient{
+    border-top: 1px solid var(--rule);
+    padding: 14px 0;
+  }
+  details.patient:first-child{ border-top: none; }
+  details.patient summary{
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  details.patient summary::-webkit-details-marker{ display: none; }
+  .visit-log{
+    margin-top: 12px;
+    padding-left: 14px;
+    border-left: 2px solid var(--rule);
+  }
+  .visit-entry{ padding: 8px 0 8px 14px; font-size: 14px; }
+  .visit-entry .vd{ color: var(--muted); font-size: 12.5px; }
+
+  .search{
+    width: 100%;
+    min-height: 46px;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    background: var(--paper);
+    margin-bottom: 4px;
+  }
+
+  .toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .result-box{ margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .result-box textarea{ flex: 1; min-width: 200px; }
+
+  .foot-note{
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="brand">CURE <small data-i18n="tagline">Rural Healthcare Continuity</small></div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
+      <button class="lang-btn" data-lang="hi">हिंदी</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-view="myday" data-i18n="nav_myday">My Day</button>
+    <button class="tab-btn" data-view="log" data-i18n="nav_log">Log Visit</button>
+    <button class="tab-btn" data-view="patients" data-i18n="nav_patients">Patients</button>
+    <button class="tab-btn" data-view="queue" data-i18n="nav_queue">Queue</button>
+    <button class="tab-btn" data-view="vaccination" data-i18n="nav_vaccination">Vaccination</button>
+    <button class="tab-btn" data-view="diagnostics" data-i18n="nav_diagnostics">Diagnostics</button>
+    <button class="tab-btn" data-view="medicine" data-i18n="nav_medicine">Medicine Stock</button>
+    <button class="tab-btn" data-view="dashboard" data-i18n="nav_dashboard">Facility Dashboard</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= MY DAY (FHW DASHBOARD) ================= -->
+  <div class="view active" id="view-myday">
+    <h2 data-i18n="myday_h">My day</h2>
+    <p class="lede" data-i18n="myday_lede">Everything that needs your attention today, in one place — works offline.</p>
+
+    <div id="emergencyPanel"></div>
+
+    <div class="stats" id="mydayStats"></div>
+
+    <div class="panel">
+      <h3 data-i18n="myday_today_h">Today's patients</h3>
+      <div class="hint" data-i18n="myday_today_hint">Visits you've logged today.</div>
+      <div id="mydayTodayList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="myday_ref_h">Pending referral follow-ups</h3>
+      <div class="hint" data-i18n="myday_ref_hint">Referrals waiting to be completed at the receiving facility.</div>
+      <div id="mydayReferralList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="myday_risk_h">High-risk patients due</h3>
+      <div class="hint" data-i18n="myday_risk_hint">Maternal, child, and chronic-condition patients not seen in 14+ days.</div>
+      <div id="mydayRiskList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="myday_update_h">Records to update</h3>
+      <div class="hint" data-i18n="myday_update_hint">Patients with no visit logged in the last 14 days.</div>
+      <div id="mydayUpdateList"></div>
+    </div>
+  </div>
+
+  <!-- ================= LOG VISIT VIEW ================= -->
+  <div class="view" id="view-log">
+    <h2 data-i18n="log_h">Log a patient visit</h2>
+    <p class="lede" data-i18n="log_lede">Register a new patient or add a visit to an existing one. Flag anything urgent, needing referral, a diagnostic test, or a vaccine dose.</p>
+
+    <div class="panel">
+      <h3 data-i18n="log_panel_h">New visit</h3>
+      <div class="hint" data-i18n="offline_hint">Works offline — this demo saves to your browser, no internet required.</div>
+
+      <form id="visitForm">
+        <div class="row2">
+          <div class="field">
+            <label for="pName" data-i18n="lbl_name">Patient name</label>
+            <input type="text" id="pName" required placeholder="e.g. Sunita Devi">
+          </div>
+          <div class="field">
+            <label for="pAge" data-i18n="lbl_age">Age</label>
+            <input type="number" id="pAge" min="0" max="120" required placeholder="e.g. 28">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="pVillage" data-i18n="lbl_village">Village / area</label>
+            <input type="text" id="pVillage" required placeholder="e.g. Bangi Rughu">
+          </div>
+          <div class="field">
+            <label for="pCategory" data-i18n="lbl_category">Patient category</label>
+            <select id="pCategory">
+              <option value="General" data-i18n="cat_general">General</option>
+              <option value="Maternal" data-i18n="cat_maternal">Maternal</option>
+              <option value="Child" data-i18n="cat_child">Child</option>
+              <option value="Chronic" data-i18n="cat_chronic">Chronic condition</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="pNotes" data-i18n="lbl_notes">Visit notes / symptoms</label>
+          <textarea id="pNotes" required placeholder="e.g. Fever for 3 days, mild dehydration"></textarea>
+        </div>
+
+        <div class="triage-box">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px;" data-i18n="triage_label">Triage — check any warning signs present</label>
+          <div class="sign"><input type="checkbox" class="triageSign" id="ts1"><label for="ts1" data-i18n="triage_1">Difficulty breathing</label></div>
+          <div class="sign"><input type="checkbox" class="triageSign" id="ts2"><label for="ts2" data-i18n="triage_2">Heavy bleeding</label></div>
+          <div class="sign"><input type="checkbox" class="triageSign" id="ts3"><label for="ts3" data-i18n="triage_3">Unconscious or unresponsive</label></div>
+          <div class="sign"><input type="checkbox" class="triageSign" id="ts4"><label for="ts4" data-i18n="triage_4">High fever with convulsions</label></div>
+          <div class="sign"><input type="checkbox" class="triageSign" id="ts5"><label for="ts5" data-i18n="triage_5">Severe dehydration</label></div>
+          <div class="hint" style="margin:8px 0 0;" id="triagePreview" data-i18n="triage_hint">Any sign checked marks this visit Emergency and raises an alert on the dashboard.</div>
+        </div>
+
+        <div class="checkline">
+          <input type="checkbox" id="needsReferral">
+          <label for="needsReferral" data-i18n="chk_referral">This patient needs a referral</label>
+        </div>
+        <div class="subfields" id="referralFields">
+          <div class="row2">
+            <div class="field">
+              <label for="refReason" data-i18n="lbl_refreason">Reason for referral</label>
+              <input type="text" id="refReason" placeholder="e.g. Specialist review needed">
+            </div>
+            <div class="field">
+              <label for="refTo" data-i18n="lbl_refto">Refer to</label>
+              <select id="refTo">
+                <option data-i18n="fac_rural">Rural Hospital</option>
+                <option data-i18n="fac_district">District Hospital</option>
+                <option data-i18n="fac_phc">PHC</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkline">
+          <input type="checkbox" id="needsDiagnostic">
+          <label for="needsDiagnostic" data-i18n="chk_diagnostic">Order a diagnostic test</label>
+        </div>
+        <div class="subfields" id="diagnosticFields">
+          <div class="field">
+            <label for="diagTest" data-i18n="lbl_diagtest">Test</label>
+            <select id="diagTest">
+              <option data-i18n="test_blood">Blood test</option>
+              <option data-i18n="test_urine">Urine test</option>
+              <option data-i18n="test_sugar">Blood sugar</option>
+              <option data-i18n="test_xray">X-ray</option>
+              <option data-i18n="test_us">Ultrasound</option>
+              <option data-i18n="test_other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checkline" id="vaccineLine" style="display:none;">
+          <input type="checkbox" id="needsVaccine">
+          <label for="needsVaccine" data-i18n="chk_vaccine">Log a vaccination for this child</label>
+        </div>
+        <div class="subfields" id="vaccineFields">
+          <div class="row2">
+            <div class="field">
+              <label for="vaccName" data-i18n="lbl_vaccname">Vaccine given today</label>
+              <select id="vaccName">
+                <option>BCG</option>
+                <option>OPV</option>
+                <option data-i18n="vacc_penta">Penta / DPT</option>
+                <option data-i18n="vacc_measles">Measles / MR</option>
+                <option data-i18n="vacc_vita">Vitamin A</option>
+                <option data-i18n="test_other">Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vaccNextDue" data-i18n="lbl_vaccnext">Next dose due on</label>
+              <input type="date" id="vaccNextDue">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">Save visit</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= PATIENTS VIEW ================= -->
+  <div class="view" id="view-patients">
+    <h2 data-i18n="patients_h">My patients</h2>
+    <p class="lede" data-i18n="patients_lede">Longitudinal record for every patient — every visit, referral, test, and dose in one place.</p>
+    <div class="panel">
+      <div class="toolbar">
+        <h3 data-i18n="patients_panel_h">All patients</h3>
+      </div>
+      <input type="text" class="search" id="patientSearch" placeholder="Search by name or village…">
+      <div id="patientList"></div>
+    </div>
+  </div>
+
+  <!-- ================= QUEUE / APPOINTMENTS VIEW ================= -->
+  <div class="view" id="view-queue">
+    <h2 data-i18n="queue_h">Appointments &amp; queue</h2>
+    <p class="lede" data-i18n="queue_lede">Book a slot so patients aren't waiting around, and manage today's line at the facility.</p>
+
+    <div class="panel">
+      <h3 data-i18n="queue_book_h">Schedule an appointment</h3>
+      <form id="apptForm">
+        <div class="row2">
+          <div class="field">
+            <label for="aName" data-i18n="lbl_name">Patient name</label>
+            <input type="text" id="aName" required placeholder="e.g. Ranjit Kaur">
+          </div>
+          <div class="field">
+            <label for="aVillage" data-i18n="lbl_village">Village / area</label>
+            <input type="text" id="aVillage" required placeholder="e.g. Talwandi Sabo">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="aDate" data-i18n="lbl_date">Date</label>
+            <input type="date" id="aDate" required>
+          </div>
+          <div class="field">
+            <label for="aTime" data-i18n="lbl_time">Time</label>
+            <input type="time" id="aTime" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="aReason" data-i18n="lbl_reason">Reason for visit</label>
+          <input type="text" id="aReason" placeholder="e.g. ANC check-up">
+        </div>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_addqueue">Add to queue</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="queue_today_h">Today's queue</h3>
+      <div class="hint" data-i18n="queue_today_hint">Move patients through as they're seen.</div>
+      <div id="queueTodayList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="queue_upcoming_h">Upcoming appointments</h3>
+      <div id="queueUpcomingList"></div>
+    </div>
+  </div>
+
+  <!-- ================= VACCINATION VIEW ================= -->
+  <div class="view" id="view-vaccination">
+    <h2 data-i18n="vacc_h">Child vaccination tracker</h2>
+    <p class="lede" data-i18n="vacc_lede">Every child patient's dose history and next due date, so no one falls through the cracks between visits.</p>
+
+    <div class="panel">
+      <h3 data-i18n="vacc_due_h">Due or overdue</h3>
+      <div class="hint" data-i18n="vacc_due_hint">Sorted by how soon the next dose is due. Overdue doses are flagged.</div>
+      <div id="vaccDueList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="vacc_hist_h">Full dose history</h3>
+      <div id="vaccHistoryList"></div>
+    </div>
+  </div>
+
+  <!-- ================= DIAGNOSTICS VIEW ================= -->
+  <div class="view" id="view-diagnostics">
+    <h2 data-i18n="diag_h">Diagnostic coordination</h2>
+    <p class="lede" data-i18n="diag_lede">Track every ordered test from sample collection through to a result the frontline worker can act on.</p>
+
+    <div class="panel">
+      <h3 data-i18n="diag_panel_h">Test orders</h3>
+      <div class="hint" data-i18n="diag_panel_hint">Advance a test's status as it moves through the lab.</div>
+      <div id="diagnosticsList"></div>
+    </div>
+  </div>
+
+  <!-- ================= MEDICINE STOCK VIEW ================= -->
+  <div class="view" id="view-medicine">
+    <h2 data-i18n="med_h">Medicine &amp; supply availability</h2>
+    <p class="lede" data-i18n="med_lede">Keep the facility dashboard honest about what's actually in stock.</p>
+
+    <div class="panel">
+      <h3 data-i18n="med_panel_h">Current stock</h3>
+      <div id="medicineList"></div>
+      <form id="medForm" style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+        <input type="text" id="medName" placeholder="Add another item…" style="flex:1;min-width:180px;min-height:44px;border:1.5px solid var(--rule);border-radius:8px;padding:8px 12px;font-size:15px;background:var(--paper);">
+        <button type="submit" class="btn btn-ghost btn-small" data-i18n="btn_additem">Add item</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= DASHBOARD VIEW ================= -->
+  <div class="view" id="view-dashboard">
+    <h2 data-i18n="dash_h">Facility dashboard</h2>
+    <p class="lede" data-i18n="dash_lede">One shared view of every patient, every referral, and who needs attention first.</p>
+
+    <div id="dashEmergencyPanel"></div>
+
+    <div class="stats" id="statCards"></div>
+
+    <div class="panel">
+      <h3 data-i18n="dash_ref_h">Pending referrals</h3>
+      <div class="hint" data-i18n="dash_ref_hint">Mark a referral complete once the patient has been seen at the receiving facility.</div>
+      <div id="referralList"></div>
+    </div>
+
+    <div class="panel">
+      <h3 data-i18n="dash_risk_h">High-risk follow-ups</h3>
+      <div class="hint" data-i18n="dash_risk_hint">Maternal, child, and chronic-condition patients — the ones most likely to fall through the cracks.</div>
+      <div id="riskList"></div>
+    </div>
+  </div>
+
+  <p class="foot-note"><span data-i18n="foot_note">Demo data is stored only in this browser. Use "Reset demo data" below to start fresh.</span><br>
+    <button class="btn btn-ghost btn-small" id="resetBtn" style="margin-top:10px;" data-i18n="btn_reset">Reset demo data</button>
+  </p>
+
+</main>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'cure_demo_data_v2';
+  var LANG_KEY = 'cure_lang';
+
+  /* ---------------- i18n ---------------- */
+  var I18N = {
+    en: {
+      tagline: "Rural Healthcare Continuity",
+      nav_myday: "My Day", nav_log: "Log Visit", nav_patients: "Patients", nav_queue: "Queue",
+      nav_vaccination: "Vaccination", nav_diagnostics: "Diagnostics", nav_medicine: "Medicine Stock", nav_dashboard: "Facility Dashboard",
+      myday_h: "My day", myday_lede: "Everything that needs your attention today, in one place — works offline.",
+      myday_today_h: "Today's patients", myday_today_hint: "Visits you've logged today.",
+      myday_ref_h: "Pending referral follow-ups", myday_ref_hint: "Referrals waiting to be completed at the receiving facility.",
+      myday_risk_h: "High-risk patients due", myday_risk_hint: "Maternal, child, and chronic-condition patients not seen in 14+ days.",
+      myday_update_h: "Records to update", myday_update_hint: "Patients with no visit logged in the last 14 days.",
+      log_h: "Log a patient visit", log_lede: "Register a new patient or add a visit to an existing one. Flag anything urgent, needing referral, a diagnostic test, or a vaccine dose.",
+      log_panel_h: "New visit", offline_hint: "Works offline — this demo saves to your browser, no internet required.",
+      lbl_name: "Patient name", lbl_age: "Age", lbl_village: "Village / area", lbl_category: "Patient category",
+      cat_general: "General", cat_maternal: "Maternal", cat_child: "Child", cat_chronic: "Chronic condition",
+      lbl_notes: "Visit notes / symptoms",
+      triage_label: "Triage — check any warning signs present",
+      triage_1: "Difficulty breathing", triage_2: "Heavy bleeding", triage_3: "Unconscious or unresponsive",
+      triage_4: "High fever with convulsions", triage_5: "Severe dehydration",
+      triage_hint: "Any sign checked marks this visit Emergency and raises an alert on the dashboard.",
+      chk_referral: "This patient needs a referral", lbl_refreason: "Reason for referral", lbl_refto: "Refer to",
+      fac_rural: "Rural Hospital", fac_district: "District Hospital", fac_phc: "PHC",
+      chk_diagnostic: "Order a diagnostic test", lbl_diagtest: "Test",
+      test_blood: "Blood test", test_urine: "Urine test", test_sugar: "Blood sugar", test_xray: "X-ray", test_us: "Ultrasound", test_other: "Other",
+      chk_vaccine: "Log a vaccination for this child", lbl_vaccname: "Vaccine given today", lbl_vaccnext: "Next dose due on",
+      vacc_penta: "Penta / DPT", vacc_measles: "Measles / MR", vacc_vita: "Vitamin A",
+      btn_save: "Save visit",
+      patients_h: "My patients", patients_lede: "Longitudinal record for every patient — every visit, referral, test, and dose in one place.",
+      patients_panel_h: "All patients",
+      queue_h: "Appointments & queue", queue_lede: "Book a slot so patients aren't waiting around, and manage today's line at the facility.",
+      queue_book_h: "Schedule an appointment", lbl_date: "Date", lbl_time: "Time", lbl_reason: "Reason for visit",
+      btn_addqueue: "Add to queue",
+      queue_today_h: "Today's queue", queue_today_hint: "Move patients through as they're seen.",
+      queue_upcoming_h: "Upcoming appointments",
+      vacc_h: "Child vaccination tracker", vacc_lede: "Every child patient's dose history and next due date, so no one falls through the cracks between visits.",
+      vacc_due_h: "Due or overdue", vacc_due_hint: "Sorted by how soon the next dose is due. Overdue doses are flagged.",
+      vacc_hist_h: "Full dose history",
+      diag_h: "Diagnostic coordination", diag_lede: "Track every ordered test from sample collection through to a result the frontline worker can act on.",
+      diag_panel_h: "Test orders", diag_panel_hint: "Advance a test's status as it moves through the lab.",
+      med_h: "Medicine & supply availability", med_lede: "Keep the facility dashboard honest about what's actually in stock.",
+      med_panel_h: "Current stock", btn_additem: "Add item",
+      dash_h: "Facility dashboard", dash_lede: "One shared view of every patient, every referral, and who needs attention first.",
+      dash_ref_h: "Pending referrals", dash_ref_hint: "Mark a referral complete once the patient has been seen at the receiving facility.",
+      dash_risk_h: "High-risk follow-ups", dash_risk_hint: "Maternal, child, and chronic-condition patients — the ones most likely to fall through the cracks.",
+      foot_note: 'Demo data is stored only in this browser. Use "Reset demo data" below to start fresh.',
+      btn_reset: "Reset demo data"
+    },
+    pa: {
+      tagline: "ਪੇਂਡੂ ਸਿਹਤ ਸੰਭਾਲ ਨਿਰੰਤਰਤਾ",
+      nav_myday: "ਮੇਰਾ ਦਿਨ", nav_log: "ਵਿਜ਼ਿਟ ਦਰਜ ਕਰੋ", nav_patients: "ਮਰੀਜ਼", nav_queue: "ਕਤਾਰ",
+      nav_vaccination: "ਟੀਕਾਕਰਨ", nav_diagnostics: "ਜਾਂਚ", nav_medicine: "ਦਵਾਈ ਭੰਡਾਰ", nav_dashboard: "ਸਹੂਲਤ ਡੈਸ਼ਬੋਰਡ",
+      myday_h: "ਮੇਰਾ ਦਿਨ", myday_lede: "ਅੱਜ ਜਿਸ ਵੀ ਚੀਜ਼ ਵੱਲ ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ, ਇੱਕੋ ਥਾਂ ਤੇ — ਬਿਨਾਂ ਇੰਟਰਨੈੱਟ ਵੀ ਕੰਮ ਕਰਦਾ ਹੈ।",
+      myday_today_h: "ਅੱਜ ਦੇ ਮਰੀਜ਼", myday_today_hint: "ਅੱਜ ਦਰਜ ਕੀਤੀਆਂ ਵਿਜ਼ਿਟਾਂ।",
+      myday_ref_h: "ਬਾਕੀ ਰੈਫ਼ਰਲ ਫਾਲੋ-ਅੱਪ", myday_ref_hint: "ਰੈਫ਼ਰਲ ਜੋ ਸਬੰਧਤ ਸਹੂਲਤ ਤੇ ਪੂਰੇ ਹੋਣੇ ਬਾਕੀ ਹਨ।",
+      myday_risk_h: "ਉੱਚ-ਜੋਖਮ ਵਾਲੇ ਮਰੀਜ਼ ਬਾਕੀ", myday_risk_hint: "ਮਾਤਾ, ਬੱਚਾ, ਅਤੇ ਪੁਰਾਣੀ ਬਿਮਾਰੀ ਵਾਲੇ ਮਰੀਜ਼ ਜੋ 14+ ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਦੇਖੇ ਗਏ।",
+      myday_update_h: "ਰਿਕਾਰਡ ਅੱਪਡੇਟ ਕਰਨੇ ਹਨ", myday_update_hint: "ਪਿਛਲੇ 14 ਦਿਨਾਂ ਵਿੱਚ ਕੋਈ ਵਿਜ਼ਿਟ ਦਰਜ ਨਹੀਂ ਹੋਈ।",
+      log_h: "ਮਰੀਜ਼ ਦੀ ਵਿਜ਼ਿਟ ਦਰਜ ਕਰੋ", log_lede: "ਨਵਾਂ ਮਰੀਜ਼ ਦਰਜ ਕਰੋ ਜਾਂ ਮੌਜੂਦਾ ਵਿੱਚ ਵਿਜ਼ਿਟ ਜੋੜੋ। ਜ਼ਰੂਰੀ, ਰੈਫ਼ਰਲ, ਜਾਂਚ ਜਾਂ ਟੀਕੇ ਨੂੰ ਚਿੰਨ੍ਹਿਤ ਕਰੋ।",
+      log_panel_h: "ਨਵੀਂ ਵਿਜ਼ਿਟ", offline_hint: "ਬਿਨਾਂ ਇੰਟਰਨੈੱਟ ਕੰਮ ਕਰਦਾ ਹੈ — ਇਹ ਡੈਮੋ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਸੰਭਾਲਦਾ ਹੈ।",
+      lbl_name: "ਮਰੀਜ਼ ਦਾ ਨਾਮ", lbl_age: "ਉਮਰ", lbl_village: "ਪਿੰਡ / ਖੇਤਰ", lbl_category: "ਮਰੀਜ਼ ਸ਼੍ਰੇਣੀ",
+      cat_general: "ਆਮ", cat_maternal: "ਮਾਤਾ", cat_child: "ਬੱਚਾ", cat_chronic: "ਪੁਰਾਣੀ ਬਿਮਾਰੀ",
+      lbl_notes: "ਵਿਜ਼ਿਟ ਨੋਟਸ / ਲੱਛਣ",
+      triage_label: "ਟ੍ਰਾਈਏਜ — ਮੌਜੂਦ ਚੇਤਾਵਨੀ ਸੰਕੇਤਾਂ ਨੂੰ ਚੁਣੋ",
+      triage_1: "ਸਾਹ ਲੈਣ ਵਿੱਚ ਮੁਸ਼ਕਲ", triage_2: "ਭਾਰੀ ਖੂਨ ਵਹਿਣਾ", triage_3: "ਬੇਹੋਸ਼ ਜਾਂ ਅਚੇਤ",
+      triage_4: "ਦੌਰੇ ਨਾਲ ਤੇਜ਼ ਬੁਖਾਰ", triage_5: "ਗੰਭੀਰ ਡੀਹਾਈਡ੍ਰੇਸ਼ਨ",
+      triage_hint: "ਕੋਈ ਵੀ ਸੰਕੇਤ ਚੁਣਨ ਨਾਲ ਇਹ ਵਿਜ਼ਿਟ ਐਮਰਜੈਂਸੀ ਬਣ ਜਾਂਦੀ ਹੈ ਅਤੇ ਡੈਸ਼ਬੋਰਡ ਤੇ ਚੇਤਾਵਨੀ ਦਿੰਦੀ ਹੈ।",
+      chk_referral: "ਇਸ ਮਰੀਜ਼ ਨੂੰ ਰੈਫ਼ਰਲ ਚਾਹੀਦਾ ਹੈ", lbl_refreason: "ਰੈਫ਼ਰਲ ਦਾ ਕਾਰਨ", lbl_refto: "ਕਿੱਥੇ ਭੇਜਣਾ ਹੈ",
+      fac_rural: "ਪੇਂਡੂ ਹਸਪਤਾਲ", fac_district: "ਜ਼ਿਲ੍ਹਾ ਹਸਪਤਾਲ", fac_phc: "PHC",
+      chk_diagnostic: "ਜਾਂਚ ਦਾ ਆਰਡਰ ਦਿਓ", lbl_diagtest: "ਜਾਂਚ",
+      test_blood: "ਖੂਨ ਦੀ ਜਾਂਚ", test_urine: "ਪਿਸ਼ਾਬ ਦੀ ਜਾਂਚ", test_sugar: "ਬਲੱਡ ਸ਼ੂਗਰ", test_xray: "ਐਕਸ-ਰੇ", test_us: "ਅਲਟਰਾਸਾਊਂਡ", test_other: "ਹੋਰ",
+      chk_vaccine: "ਇਸ ਬੱਚੇ ਦਾ ਟੀਕਾ ਦਰਜ ਕਰੋ", lbl_vaccname: "ਅੱਜ ਦਿੱਤਾ ਟੀਕਾ", lbl_vaccnext: "ਅਗਲੀ ਖੁਰਾਕ ਦੀ ਮਿਤੀ",
+      vacc_penta: "ਪੈਂਟਾ / DPT", vacc_measles: "ਖਸਰਾ / MR", vacc_vita: "ਵਿਟਾਮਿਨ A",
+      btn_save: "ਵਿਜ਼ਿਟ ਸੰਭਾਲੋ",
+      patients_h: "ਮੇਰੇ ਮਰੀਜ਼", patients_lede: "ਹਰ ਮਰੀਜ਼ ਦਾ ਪੂਰਾ ਰਿਕਾਰਡ — ਹਰ ਵਿਜ਼ਿਟ, ਰੈਫ਼ਰਲ, ਜਾਂਚ ਅਤੇ ਖੁਰਾਕ ਇੱਕੋ ਥਾਂ।",
+      patients_panel_h: "ਸਾਰੇ ਮਰੀਜ਼",
+      queue_h: "ਅਪਾਇੰਟਮੈਂਟ ਅਤੇ ਕਤਾਰ", queue_lede: "ਮਰੀਜ਼ਾਂ ਨੂੰ ਇੰਤਜ਼ਾਰ ਤੋਂ ਬਚਾਉਣ ਲਈ ਸਮਾਂ ਬੁੱਕ ਕਰੋ, ਅਤੇ ਅੱਜ ਦੀ ਕਤਾਰ ਸੰਭਾਲੋ।",
+      queue_book_h: "ਅਪਾਇੰਟਮੈਂਟ ਬੁੱਕ ਕਰੋ", lbl_date: "ਮਿਤੀ", lbl_time: "ਸਮਾਂ", lbl_reason: "ਵਿਜ਼ਿਟ ਦਾ ਕਾਰਨ",
+      btn_addqueue: "ਕਤਾਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ",
+      queue_today_h: "ਅੱਜ ਦੀ ਕਤਾਰ", queue_today_hint: "ਦੇਖੇ ਜਾਣ ਤੇ ਮਰੀਜ਼ਾਂ ਨੂੰ ਅੱਗੇ ਵਧਾਓ।",
+      queue_upcoming_h: "ਆਉਣ ਵਾਲੀਆਂ ਅਪਾਇੰਟਮੈਂਟਾਂ",
+      vacc_h: "ਬੱਚੇ ਦਾ ਟੀਕਾਕਰਨ ਟਰੈਕਰ", vacc_lede: "ਹਰ ਬੱਚੇ ਦੀ ਖੁਰਾਕ ਦਾ ਇਤਿਹਾਸ ਅਤੇ ਅਗਲੀ ਮਿਤੀ।",
+      vacc_due_h: "ਬਾਕੀ ਜਾਂ ਲੇਟ", vacc_due_hint: "ਅਗਲੀ ਖੁਰਾਕ ਦੀ ਮਿਤੀ ਅਨੁਸਾਰ ਕ੍ਰਮਬੱਧ।",
+      vacc_hist_h: "ਪੂਰਾ ਖੁਰਾਕ ਇਤਿਹਾਸ",
+      diag_h: "ਜਾਂਚ ਤਾਲਮੇਲ", diag_lede: "ਹਰ ਆਰਡਰ ਕੀਤੀ ਜਾਂਚ ਨੂੰ ਨਮੂਨੇ ਤੋਂ ਨਤੀਜੇ ਤੱਕ ਟਰੈਕ ਕਰੋ।",
+      diag_panel_h: "ਜਾਂਚ ਆਰਡਰ", diag_panel_hint: "ਜਾਂਚ ਦੀ ਸਥਿਤੀ ਅੱਗੇ ਵਧਾਓ।",
+      med_h: "ਦਵਾਈ ਅਤੇ ਸਮਾਨ ਉਪਲਬਧਤਾ", med_lede: "ਡੈਸ਼ਬੋਰਡ ਨੂੰ ਅਸਲ ਭੰਡਾਰ ਬਾਰੇ ਸਹੀ ਰੱਖੋ।",
+      med_panel_h: "ਮੌਜੂਦਾ ਭੰਡਾਰ", btn_additem: "ਸਮਾਨ ਸ਼ਾਮਲ ਕਰੋ",
+      dash_h: "ਸਹੂਲਤ ਡੈਸ਼ਬੋਰਡ", dash_lede: "ਹਰ ਮਰੀਜ਼, ਹਰ ਰੈਫ਼ਰਲ ਦਾ ਸਾਂਝਾ ਦ੍ਰਿਸ਼।",
+      dash_ref_h: "ਬਾਕੀ ਰੈਫ਼ਰਲ", dash_ref_hint: "ਮਰੀਜ਼ ਦੇਖੇ ਜਾਣ ਤੇ ਰੈਫ਼ਰਲ ਪੂਰਾ ਚਿੰਨ੍ਹਿਤ ਕਰੋ।",
+      dash_risk_h: "ਉੱਚ-ਜੋਖਮ ਫਾਲੋ-ਅੱਪ", dash_risk_hint: "ਮਾਤਾ, ਬੱਚਾ, ਪੁਰਾਣੀ ਬਿਮਾਰੀ ਵਾਲੇ ਮਰੀਜ਼।",
+      foot_note: 'ਡੈਮੋ ਡਾਟਾ ਸਿਰਫ਼ ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਸੰਭਾਲਿਆ ਹੈ।',
+      btn_reset: "ਡੈਮੋ ਡਾਟਾ ਰੀਸੈੱਟ ਕਰੋ"
+    },
+    hi: {
+      tagline: "ग्रामीण स्वास्थ्य सेवा निरंतरता",
+      nav_myday: "मेरा दिन", nav_log: "विज़िट दर्ज करें", nav_patients: "मरीज़", nav_queue: "कतार",
+      nav_vaccination: "टीकाकरण", nav_diagnostics: "जांच", nav_medicine: "दवा स्टॉक", nav_dashboard: "सुविधा डैशबोर्ड",
+      myday_h: "मेरा दिन", myday_lede: "आज जिस भी चीज़ पर ध्यान देना है, एक ही जगह — बिना इंटरनेट भी काम करता है।",
+      myday_today_h: "आज के मरीज़", myday_today_hint: "आज दर्ज की गई विज़िटें।",
+      myday_ref_h: "लंबित रेफ़रल फॉलो-अप", myday_ref_hint: "रेफ़रल जो संबंधित सुविधा पर पूरे होने बाकी हैं।",
+      myday_risk_h: "उच्च-जोखिम वाले मरीज़ बाकी", myday_risk_hint: "मातृ, बाल और पुरानी बीमारी वाले मरीज़ जो 14+ दिनों से नहीं देखे गए।",
+      myday_update_h: "रिकॉर्ड अपडेट करने हैं", myday_update_hint: "पिछले 14 दिनों में कोई विज़िट दर्ज नहीं हुई।",
+      log_h: "मरीज़ की विज़िट दर्ज करें", log_lede: "नया मरीज़ दर्ज करें या मौजूदा में विज़िट जोड़ें। ज़रूरी, रेफ़रल, जांच या टीके को चिह्नित करें।",
+      log_panel_h: "नई विज़िट", offline_hint: "बिना इंटरनेट काम करता है — यह डेमो आपके ब्राउज़र में सेव होता है।",
+      lbl_name: "मरीज़ का नाम", lbl_age: "उम्र", lbl_village: "गांव / क्षेत्र", lbl_category: "मरीज़ श्रेणी",
+      cat_general: "सामान्य", cat_maternal: "मातृ", cat_child: "बच्चा", cat_chronic: "पुरानी बीमारी",
+      lbl_notes: "विज़िट नोट्स / लक्षण",
+      triage_label: "ट्राइएज — मौजूद चेतावनी संकेत चुनें",
+      triage_1: "सांस लेने में कठिनाई", triage_2: "भारी रक्तस्राव", triage_3: "बेहोश या अचेत",
+      triage_4: "दौरे के साथ तेज़ बुखार", triage_5: "गंभीर निर्जलीकरण",
+      triage_hint: "कोई भी संकेत चुनने पर यह विज़िट इमरजेंसी बन जाती है और डैशबोर्ड पर अलर्ट देती है।",
+      chk_referral: "इस मरीज़ को रेफ़रल चाहिए", lbl_refreason: "रेफ़रल का कारण", lbl_refto: "कहाँ भेजना है",
+      fac_rural: "ग्रामीण अस्पताल", fac_district: "जिला अस्पताल", fac_phc: "PHC",
+      chk_diagnostic: "जांच का आदेश दें", lbl_diagtest: "जांच",
+      test_blood: "रक्त जांच", test_urine: "मूत्र जांच", test_sugar: "ब्लड शुगर", test_xray: "एक्स-रे", test_us: "अल्ट्रासाउंड", test_other: "अन्य",
+      chk_vaccine: "इस बच्चे का टीका दर्ज करें", lbl_vaccname: "आज दिया गया टीका", lbl_vaccnext: "अगली खुराक की तारीख",
+      vacc_penta: "पेंटा / DPT", vacc_measles: "खसरा / MR", vacc_vita: "विटामिन A",
+      btn_save: "विज़िट सेव करें",
+      patients_h: "मेरे मरीज़", patients_lede: "हर मरीज़ का पूरा रिकॉर्ड — हर विज़िट, रेफ़रल, जांच और खुराक एक जगह।",
+      patients_panel_h: "सभी मरीज़",
+      queue_h: "अपॉइंटमेंट और कतार", queue_lede: "मरीज़ों को इंतज़ार से बचाने के लिए स्लॉट बुक करें, और आज की कतार संभालें।",
+      queue_book_h: "अपॉइंटमेंट बुक करें", lbl_date: "तारीख", lbl_time: "समय", lbl_reason: "विज़िट का कारण",
+      btn_addqueue: "कतार में जोड़ें",
+      queue_today_h: "आज की कतार", queue_today_hint: "देखे जाने पर मरीज़ों को आगे बढ़ाएं।",
+      queue_upcoming_h: "आगामी अपॉइंटमेंट",
+      vacc_h: "बाल टीकाकरण ट्रैकर", vacc_lede: "हर बच्चे की खुराक का इतिहास और अगली तारीख।",
+      vacc_due_h: "बाकी या लेट", vacc_due_hint: "अगली खुराक की तारीख के अनुसार क्रमबद्ध।",
+      vacc_hist_h: "पूरा खुराक इतिहास",
+      diag_h: "जांच समन्वय", diag_lede: "हर आदेशित जांच को नमूने से नतीजे तक ट्रैक करें।",
+      diag_panel_h: "जांच आदेश", diag_panel_hint: "जांच की स्थिति आगे बढ़ाएं।",
+      med_h: "दवा और सामग्री उपलब्धता", med_lede: "डैशबोर्ड को असली स्टॉक के बारे में सटीक रखें।",
+      med_panel_h: "मौजूदा स्टॉक", btn_additem: "आइटम जोड़ें",
+      dash_h: "सुविधा डैशबोर्ड", dash_lede: "हर मरीज़, हर रेफ़रल का साझा दृश्य।",
+      dash_ref_h: "लंबित रेफ़रल", dash_ref_hint: "मरीज़ देखे जाने पर रेफ़रल पूरा चिह्नित करें।",
+      dash_risk_h: "उच्च-जोखिम फॉलो-अप", dash_risk_hint: "मातृ, बाल, पुरानी बीमारी वाले मरीज़।",
+      foot_note: 'डेमो डेटा केवल इस ब्राउज़र में सेव है।',
+      btn_reset: "डेमो डेटा रीसेट करें"
+    }
+  };
+  var currentLang = localStorage.getItem(LANG_KEY) || 'en';
+
+  function applyLanguage(lang){
+    currentLang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    var dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+  }
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.addEventListener('click', function(){ applyLanguage(b.getAttribute('data-lang')); });
+  });
+
+  /* ---------------- Data layer ---------------- */
+  function loadData(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return seedData();
+  }
+  function saveData(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); }catch(e){}
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function daysAgo(iso){
+    var d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    return d;
+  }
+  function fmtDate(iso){
+    if(!iso) return '—';
+    var d = new Date(iso);
+    return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  }
+  function todayStr(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function seedData(){
+    var now = Date.now();
+    var mk = function(daysBack){ return new Date(now - daysBack*86400000).toISOString(); };
+    return {
+      patients: [
+        {
+          id: uid(), name: 'Sunita Devi', age: 28, village: 'Bangi Rughu', category: 'Maternal', emergency: false,
+          visits: [
+            { id: uid(), date: mk(6), notes: 'Routine antenatal check-up, mild anemia noted.', triage: { level: 'Priority' },
+              referral: { id: uid(), reason: 'Anemia — specialist review', to: 'District Hospital', status: 'pending', createdAt: mk(6) } }
+          ],
+          vaccinations: []
+        },
+        {
+          id: uid(), name: 'Baby of Meena', age: 0, village: 'Talwandi Sabo', category: 'Child', emergency: false,
+          visits: [
+            { id: uid(), date: mk(9), notes: 'Low birth weight, growth monitoring needed.', triage: { level: 'Priority' },
+              referral: { id: uid(), reason: 'Low birth weight follow-up', to: 'Rural Hospital', status: 'pending', createdAt: mk(9) } }
+          ],
+          vaccinations: [
+            { id: uid(), name: 'BCG', givenOn: mk(9), nextDue: new Date(now - 2*86400000).toISOString().slice(0,10) }
+          ]
+        },
+        {
+          id: uid(), name: 'Ajay Singh', age: 54, village: 'Bathinda Rural', category: 'Chronic', emergency: false,
+          visits: [
+            { id: uid(), date: mk(2), notes: 'Diabetes review, sugar levels stable.', triage: { level: 'Routine' },
+              referral: { id: uid(), reason: 'Diagnostic test', to: 'PHC', status: 'completed', createdAt: mk(4), completedAt: mk(2) } }
+          ],
+          vaccinations: []
+        }
+      ],
+      appointments: [
+        { id: uid(), name: 'Ranjit Kaur', village: 'Bangi Rughu', date: todayStr(), time: '11:30', reason: 'ANC check-up', status: 'waiting', createdAt: mk(0) }
+      ],
+      diagnostics: [
+        { id: uid(), patientName: 'Ajay Singh', test: 'Blood sugar', status: 'ordered', orderedAt: mk(2), result: '' }
+      ],
+      medicines: [
+        { id: uid(), name: 'ORS packets', status: 'available' },
+        { id: uid(), name: 'Paracetamol', status: 'available' },
+        { id: uid(), name: 'Iron-Folic Acid (IFA) tablets', status: 'low' },
+        { id: uid(), name: 'Oxytocin injection', status: 'available' },
+        { id: uid(), name: 'ANC kit supplies', status: 'available' },
+        { id: uid(), name: 'BCG vaccine', status: 'available' },
+        { id: uid(), name: 'Measles / MR vaccine', status: 'low' },
+        { id: uid(), name: 'Amoxicillin', status: 'out' },
+        { id: uid(), name: 'Vitamin A syrup', status: 'available' }
+      ]
+    };
+  }
+
+  var DATA = loadData();
+  DATA.appointments = DATA.appointments || [];
+  DATA.diagnostics = DATA.diagnostics || [];
+  DATA.medicines = DATA.medicines || [];
+  DATA.patients.forEach(function(p){
+    p.vaccinations = p.vaccinations || [];
+    if(typeof p.emergency === 'undefined') p.emergency = false;
+  });
+
+  /* ---------------- Derived data ---------------- */
+  function allReferrals(){
+    var out = [];
+    DATA.patients.forEach(function(p){
+      p.visits.forEach(function(v){
+        if(v.referral){ out.push({ patient: p, visit: v, referral: v.referral }); }
+      });
+    });
+    return out;
+  }
+  function pendingReferrals(){
+    return allReferrals().filter(function(r){ return r.referral.status === 'pending'; });
+  }
+  function highRiskPatients(){
+    return DATA.patients.filter(function(p){ return p.category === 'Maternal' || p.category === 'Child' || p.category === 'Chronic'; });
+  }
+  function recordsUpdatedLast7Days(){
+    var count = 0;
+    DATA.patients.forEach(function(p){ p.visits.forEach(function(v){ if(daysAgo(v.date) <= 7) count++; }); });
+    return count;
+  }
+  function lastVisitOf(p){ return p.visits[p.visits.length - 1]; }
+
+  /* ---------------- Rendering: My Day ---------------- */
+  function renderEmergencyPanel(targetId){
+    var wrap = document.getElementById(targetId);
+    if(!wrap) return;
+    var emergencies = DATA.patients.filter(function(p){ return p.emergency; });
+    if(emergencies.length === 0){ wrap.innerHTML = ''; return; }
+    wrap.innerHTML = '<div class="panel alert"><h3>⚠ Emergency alerts</h3><div class="hint">Escalated during triage — resolve once the patient has been stabilised or referred onward.</div>' +
+      emergencies.map(function(p){
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(p.name) + '</span>' +
+          '<span class="pill pill-alert">Emergency</span>' +
+          '<div class="li-sub">' + escapeHtml(p.village) + ' · ' + p.category + '</div></div>' +
+          '<button class="btn btn-alert btn-small" data-resolve="' + p.id + '">Resolve</button></div>';
+      }).join('') + '</div>';
+    wrap.querySelectorAll('[data-resolve]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var pid = btn.getAttribute('data-resolve');
+        var p = DATA.patients.find(function(x){ return x.id === pid; });
+        if(p) p.emergency = false;
+        saveData(); renderAll();
+      });
+    });
+  }
+
+  function renderMyDay(){
+    renderEmergencyPanel('emergencyPanel');
+
+    var todaysVisits = [];
+    DATA.patients.forEach(function(p){
+      p.visits.forEach(function(v){ if(daysAgo(v.date) === 0) todaysVisits.push({ patient: p, visit: v }); });
+    });
+    var pending = pendingReferrals();
+    var riskDue = highRiskPatients().filter(function(p){ return daysAgo(lastVisitOf(p).date) >= 14; });
+    var toUpdate = DATA.patients.filter(function(p){ return daysAgo(lastVisitOf(p).date) > 14; });
+    var emergencyCount = DATA.patients.filter(function(p){ return p.emergency; }).length;
+
+    document.getElementById('mydayStats').innerHTML = [
+      { num: todaysVisits.length, lbl: 'Seen today' },
+      { num: pending.length, lbl: 'Pending referrals' },
+      { num: riskDue.length, lbl: 'High-risk due' },
+      { num: emergencyCount, lbl: 'Emergency alerts', alert: emergencyCount > 0 }
+    ].map(function(s){
+      return '<div class="stat' + (s.alert ? ' is-alert' : '') + '"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>';
+    }).join('');
+
+    var todayWrap = document.getElementById('mydayTodayList');
+    todayWrap.innerHTML = todaysVisits.length === 0 ? '<div class="empty">No visits logged yet today.</div>' :
+      todaysVisits.map(function(r){
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(r.patient.name) + '</span>' +
+          (r.visit.triage && r.visit.triage.level === 'Emergency' ? '<span class="pill pill-alert">Emergency</span>' : '') +
+          '<div class="li-sub">' + escapeHtml(r.patient.village) + ' · ' + escapeHtml(r.visit.notes) + '</div></div></div>';
+      }).join('');
+
+    var refWrap = document.getElementById('mydayReferralList');
+    refWrap.innerHTML = pending.length === 0 ? '<div class="empty">No pending referrals right now.</div>' :
+      pending.map(function(r){
+        var d = daysAgo(r.referral.createdAt);
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(r.patient.name) + '</span>' +
+          '<span class="pill ' + (d>=5?'pill-risk':'pill-pending') + '">' + d + ' days pending</span>' +
+          '<div class="li-sub">' + escapeHtml(r.referral.reason) + ' → ' + escapeHtml(r.referral.to) + '</div></div></div>';
+      }).join('');
+
+    var riskWrap = document.getElementById('mydayRiskList');
+    riskWrap.innerHTML = riskDue.length === 0 ? '<div class="empty">Everyone high-risk has been seen recently.</div>' :
+      riskDue.map(function(p){
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(p.name) + '</span>' +
+          '<span class="pill pill-risk">' + p.category + '</span>' +
+          '<div class="li-sub">' + escapeHtml(p.village) + ' · last visit ' + fmtDate(lastVisitOf(p).date) + '</div></div></div>';
+      }).join('');
+
+    var updWrap = document.getElementById('mydayUpdateList');
+    updWrap.innerHTML = toUpdate.length === 0 ? '<div class="empty">All records are current.</div>' :
+      toUpdate.map(function(p){
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(p.name) + '</span>' +
+          '<div class="li-sub">' + escapeHtml(p.village) + ' · last visit ' + fmtDate(lastVisitOf(p).date) + '</div></div></div>';
+      }).join('');
+  }
+
+  /* ---------------- Rendering: Patients view ---------------- */
+  function fhirExport(p){
+    var bundle = {
+      resourceType: 'Bundle', type: 'collection',
+      entry: [
+        { resource: { resourceType: 'Patient', id: p.id, name: [{ text: p.name }], gender: undefined,
+          address: [{ text: p.village }], extra: { ageYears: p.age, category: p.category } } }
+      ].concat(p.visits.map(function(v){
+        return { resource: { resourceType: 'Encounter', id: v.id, status: 'finished', period: { start: v.date },
+          reasonCode: [{ text: v.notes }], triagePriority: v.triage ? v.triage.level : 'Routine' } };
+      })).concat((p.vaccinations||[]).map(function(d){
+        return { resource: { resourceType: 'Immunization', id: d.id, status: 'completed', vaccineCode: { text: d.name }, occurrenceDateTime: d.givenOn } };
+      }))
+    };
+    var blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = p.name.replace(/\s+/g,'_') + '_fhir.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function renderPatientList(filter){
+    var wrap = document.getElementById('patientList');
+    var list = DATA.patients.slice().sort(function(a,b){
+      return new Date(lastVisitOf(b).date) - new Date(lastVisitOf(a).date);
+    });
+    if(filter){
+      var f = filter.toLowerCase();
+      list = list.filter(function(p){
+        return p.name.toLowerCase().indexOf(f) !== -1 || p.village.toLowerCase().indexOf(f) !== -1;
+      });
+    }
+    if(list.length === 0){ wrap.innerHTML = '<div class="empty">No patients found.</div>'; return; }
+
+    wrap.innerHTML = list.map(function(p){
+      var lastVisit = lastVisitOf(p);
+      var pendingRef = p.visits.some(function(v){ return v.referral && v.referral.status === 'pending'; });
+      var visitsHtml = p.visits.slice().reverse().map(function(v){
+        var refHtml = '';
+        if(v.referral){
+          var cls = v.referral.status === 'pending' ? 'pill-pending' : 'pill-done';
+          refHtml = ' <span class="pill ' + cls + '">' + (v.referral.status === 'pending' ? 'Referral pending' : 'Referral completed') + '</span>';
+        }
+        var triageHtml = v.triage && v.triage.level && v.triage.level !== 'Routine' ?
+          ' <span class="pill ' + (v.triage.level === 'Emergency' ? 'pill-alert' : 'pill-risk') + '">' + v.triage.level + '</span>' : '';
+        return '<div class="visit-entry"><div class="vd">' + fmtDate(v.date) + '</div>' + escapeHtml(v.notes) + refHtml + triageHtml + '</div>';
+      }).join('');
+
+      return '<details class="patient">' +
+        '<summary>' +
+          '<div class="li-main">' +
+            '<span class="li-name">' + escapeHtml(p.name) + '</span>' +
+            (pendingRef ? '<span class="pill pill-pending">Referral pending</span>' : '') +
+            (p.emergency ? '<span class="pill pill-alert">Emergency</span>' : '') +
+            '<div class="li-sub">' + p.age + ' yrs · ' + escapeHtml(p.village) + ' · ' + p.category + ' · last visit ' + fmtDate(lastVisit.date) + '</div>' +
+          '</div>' +
+          '<button class="btn btn-ghost btn-small" data-fhir="' + p.id + '" type="button">Export FHIR</button>' +
+        '</summary>' +
+        '<div class="visit-log">' + visitsHtml + '</div>' +
+      '</details>';
+    }).join('');
+
+    wrap.querySelectorAll('[data-fhir]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var p = DATA.patients.find(function(x){ return x.id === btn.getAttribute('data-fhir'); });
+        if(p) fhirExport(p);
+      });
+    });
+  }
+
+  /* ---------------- Rendering: Queue ---------------- */
+  function renderQueue(){
+    var today = todayStr();
+    var todays = DATA.appointments.filter(function(a){ return a.date === today; })
+      .sort(function(a,b){ return a.time.localeCompare(b.time); });
+    var upcoming = DATA.appointments.filter(function(a){ return a.date > today; })
+      .sort(function(a,b){ return (a.date+a.time).localeCompare(b.date+b.time); });
+
+    var todayWrap = document.getElementById('queueTodayList');
+    todayWrap.innerHTML = todays.length === 0 ? '<div class="empty">No appointments booked for today.</div>' :
+      todays.map(function(a){
+        var pillCls = a.status === 'done' ? 'pill-done' : a.status === 'in-progress' ? 'pill-progress' : a.status === 'no-show' ? 'pill-alert' : 'pill-pending';
+        var actions = '';
+        if(a.status === 'waiting') actions += '<button class="btn btn-primary btn-small" data-start="' + a.id + '">Start</button>';
+        if(a.status === 'in-progress') actions += '<button class="btn btn-complete btn-small" data-complete="' + a.id + '">Complete</button>';
+        if(a.status === 'waiting' || a.status === 'in-progress') actions += '<button class="btn btn-ghost btn-small" data-noshow="' + a.id + '">No-show</button>';
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="pill ' + pillCls + '">' + a.time + ' · ' + a.status + '</span>' +
+          '<div class="li-sub">' + escapeHtml(a.village) + (a.reason ? ' · ' + escapeHtml(a.reason) : '') + '</div></div>' +
+          '<div class="li-actions">' + actions + '</div></div>';
+      }).join('');
+
+    var upWrap = document.getElementById('queueUpcomingList');
+    upWrap.innerHTML = upcoming.length === 0 ? '<div class="empty">Nothing scheduled beyond today.</div>' :
+      upcoming.map(function(a){
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="pill pill-pending">' + fmtDate(a.date) + ' · ' + a.time + '</span>' +
+          '<div class="li-sub">' + escapeHtml(a.village) + (a.reason ? ' · ' + escapeHtml(a.reason) : '') + '</div></div></div>';
+      }).join('');
+
+    todayWrap.querySelectorAll('[data-start]').forEach(function(btn){
+      btn.addEventListener('click', function(){ setApptStatus(btn.getAttribute('data-start'), 'in-progress'); });
+    });
+    todayWrap.querySelectorAll('[data-complete]').forEach(function(btn){
+      btn.addEventListener('click', function(){ setApptStatus(btn.getAttribute('data-complete'), 'done'); });
+    });
+    todayWrap.querySelectorAll('[data-noshow]').forEach(function(btn){
+      btn.addEventListener('click', function(){ setApptStatus(btn.getAttribute('data-noshow'), 'no-show'); });
+    });
+  }
+  function setApptStatus(id, status){
+    var a = DATA.appointments.find(function(x){ return x.id === id; });
+    if(a) a.status = status;
+    saveData(); renderQueue();
+  }
+
+  /* ---------------- Rendering: Vaccination view ---------------- */
+  function renderVaccinations(){
+    var dueWrap = document.getElementById('vaccDueList');
+    var histWrap = document.getElementById('vaccHistoryList');
+    if(!dueWrap || !histWrap) return;
+    var children = DATA.patients.filter(function(p){ return p.category === 'Child'; });
+
+    var dueRows = [];
+    children.forEach(function(p){
+      var doses = p.vaccinations || [];
+      var upcoming = doses.filter(function(d){ return d.nextDue; }).sort(function(a,b){ return new Date(a.nextDue) - new Date(b.nextDue); });
+      var next = upcoming[upcoming.length - 1];
+      if(next && next.nextDue) dueRows.push({ patient: p, dose: next });
+    });
+    dueRows.sort(function(a,b){ return new Date(a.dose.nextDue) - new Date(b.dose.nextDue); });
+
+    dueWrap.innerHTML = dueRows.length === 0 ? '<div class="empty">No upcoming doses scheduled yet.</div>' :
+      dueRows.map(function(r){
+        var overdue = new Date(r.dose.nextDue) < new Date();
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(r.patient.name) + '</span>' +
+          '<span class="pill ' + (overdue ? 'pill-risk' : 'pill-pending') + '">' + (overdue ? 'Overdue' : 'Due') + ' ' + fmtDate(r.dose.nextDue) + '</span>' +
+          '<div class="li-sub">' + escapeHtml(r.patient.village) + ' · last dose: ' + escapeHtml(r.dose.name) + '</div></div></div>';
+      }).join('');
+
+    histWrap.innerHTML = children.length === 0 ? '<div class="empty">No child patients logged yet.</div>' :
+      children.map(function(p){
+        var doses = p.vaccinations || [];
+        var dosesHtml = doses.length ? doses.slice().reverse().map(function(d){
+          return '<div class="visit-entry"><div class="vd">' + fmtDate(d.givenOn) + '</div>' + escapeHtml(d.name) + (d.nextDue ? ' — next due ' + fmtDate(d.nextDue) : '') + '</div>';
+        }).join('') : '<div class="visit-entry" style="color:var(--muted);">No doses logged yet.</div>';
+        return '<details class="patient"><summary><div class="li-main"><span class="li-name">' + escapeHtml(p.name) + '</span>' +
+          '<div class="li-sub">' + p.age + ' yrs · ' + escapeHtml(p.village) + '</div></div></summary>' +
+          '<div class="visit-log">' + dosesHtml + '</div></details>';
+      }).join('');
+  }
+
+  /* ---------------- Rendering: Diagnostics view ---------------- */
+  function renderDiagnostics(){
+    var wrap = document.getElementById('diagnosticsList');
+    if(!wrap) return;
+    var order = { ordered: 0, collected: 1, 'result-ready': 2 };
+    var list = DATA.diagnostics.slice().sort(function(a,b){ return order[a.status] - order[b.status]; });
+    wrap.innerHTML = list.length === 0 ? '<div class="empty">No diagnostic tests ordered yet.</div>' :
+      list.map(function(d){
+        var pillCls = d.status === 'result-ready' ? 'pill-done' : d.status === 'collected' ? 'pill-progress' : 'pill-pending';
+        var statusLbl = d.status === 'result-ready' ? 'Result ready' : d.status === 'collected' ? 'Sample collected' : 'Ordered';
+        var actions = '';
+        if(d.status === 'ordered') actions = '<button class="btn btn-primary btn-small" data-collect="' + d.id + '">Mark sample collected</button>';
+        var resultBox = '';
+        if(d.status === 'collected'){
+          resultBox = '<div class="result-box"><textarea id="res-' + d.id + '" placeholder="Enter result…"></textarea>' +
+            '<button class="btn btn-complete btn-small" data-result="' + d.id + '">Save result</button></div>';
+        }
+        if(d.status === 'result-ready' && d.result){
+          resultBox = '<div class="li-sub" style="margin-top:6px;"><strong>Result:</strong> ' + escapeHtml(d.result) + '</div>';
+        }
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(d.patientName) + '</span>' +
+          '<span class="pill ' + pillCls + '">' + escapeHtml(d.test) + ' · ' + statusLbl + '</span>' +
+          '<div class="li-sub">Ordered ' + fmtDate(d.orderedAt) + ' (' + daysAgo(d.orderedAt) + 'd ago)</div>' + resultBox + '</div>' +
+          '<div class="li-actions">' + actions + '</div></div>';
+      }).join('');
+
+    wrap.querySelectorAll('[data-collect]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var d = DATA.diagnostics.find(function(x){ return x.id === btn.getAttribute('data-collect'); });
+        if(d) d.status = 'collected';
+        saveData(); renderDiagnostics();
+      });
+    });
+    wrap.querySelectorAll('[data-result]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-result');
+        var d = DATA.diagnostics.find(function(x){ return x.id === id; });
+        var ta = document.getElementById('res-' + id);
+        if(d){ d.result = ta ? ta.value.trim() : ''; d.status = 'result-ready'; d.resultAt = new Date().toISOString(); }
+        saveData(); renderDiagnostics();
+      });
+    });
+  }
+
+  /* ---------------- Rendering: Medicine stock ---------------- */
+  function renderMedicine(){
+    var wrap = document.getElementById('medicineList');
+    if(!wrap) return;
+    wrap.innerHTML = DATA.medicines.map(function(m){
+      return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(m.name) + '</span></div>' +
+        '<select data-med="' + m.id + '" style="min-height:40px;border:1.5px solid var(--rule);border-radius:8px;padding:6px 10px;background:var(--paper);">' +
+          '<option value="available"' + (m.status==='available'?' selected':'') + '>Available</option>' +
+          '<option value="low"' + (m.status==='low'?' selected':'') + '>Low stock</option>' +
+          '<option value="out"' + (m.status==='out'?' selected':'') + '>Out of stock</option>' +
+        '</select></div>';
+    }).join('');
+    wrap.querySelectorAll('[data-med]').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var m = DATA.medicines.find(function(x){ return x.id === sel.getAttribute('data-med'); });
+        if(m) m.status = sel.value;
+        saveData();
+      });
+    });
+  }
+
+  /* ---------------- Rendering: Dashboard view ---------------- */
+  function renderDashboard(){
+    renderEmergencyPanel('dashEmergencyPanel');
+    var pending = pendingReferrals();
+    var risk = highRiskPatients();
+    var lowStock = DATA.medicines.filter(function(m){ return m.status === 'low' || m.status === 'out'; }).length;
+
+    document.getElementById('statCards').innerHTML = [
+      { num: DATA.patients.length, lbl: 'Total patients' },
+      { num: pending.length, lbl: 'Pending referrals' },
+      { num: risk.length, lbl: 'High-risk patients' },
+      { num: recordsUpdatedLast7Days(), lbl: 'Records updated (7 days)' },
+      { num: DATA.diagnostics.filter(function(d){ return d.status !== 'result-ready'; }).length, lbl: 'Diagnostics pending' },
+      { num: lowStock, lbl: 'Medicines low/out', alert: lowStock > 0 }
+    ].map(function(s){
+      return '<div class="stat' + (s.alert ? ' is-alert' : '') + '"><div class="num">' + s.num + '</div><div class="lbl">' + s.lbl + '</div></div>';
+    }).join('');
+
+    var refWrap = document.getElementById('referralList');
+    refWrap.innerHTML = pending.length === 0 ? '<div class="empty">No pending referrals right now.</div>' :
+      pending.map(function(r){
+        var d = daysAgo(r.referral.createdAt);
+        var urgent = d >= 5;
+        return '<div class="list-item">' +
+          '<div class="li-main">' +
+            '<span class="li-name">' + escapeHtml(r.patient.name) + '</span>' +
+            (urgent ? '<span class="pill pill-risk">' + d + ' days pending</span>' : '<span class="pill pill-pending">' + d + ' days pending</span>') +
+            '<div class="li-sub">' + escapeHtml(r.referral.reason) + ' → ' + escapeHtml(r.referral.to) + '</div>' +
+          '</div>' +
+          '<button class="btn btn-complete btn-small" data-complete="' + r.referral.id + '">Mark completed</button>' +
+        '</div>';
+      }).join('');
+
+    var riskWrap = document.getElementById('riskList');
+    riskWrap.innerHTML = risk.length === 0 ? '<div class="empty">No high-risk patients logged yet.</div>' :
+      risk.map(function(p){
+        var lastVisit = lastVisitOf(p);
+        return '<div class="list-item"><div class="li-main"><span class="li-name">' + escapeHtml(p.name) + '</span>' +
+          '<span class="pill pill-risk">' + p.category + '</span>' +
+          '<div class="li-sub">' + escapeHtml(p.village) + ' · last visit ' + fmtDate(lastVisit.date) + '</div></div></div>';
+      }).join('');
+
+    refWrap.querySelectorAll('[data-complete]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var refId = btn.getAttribute('data-complete');
+        allReferrals().forEach(function(r){
+          if(r.referral.id === refId){ r.referral.status = 'completed'; r.referral.completedAt = new Date().toISOString(); }
+        });
+        saveData(); renderAll();
+      });
+    });
+  }
+
+  function renderAll(){
+    renderMyDay();
+    renderPatientList(document.getElementById('patientSearch').value);
+    renderQueue();
+    renderVaccinations();
+    renderDiagnostics();
+    renderMedicine();
+    renderDashboard();
+  }
+
+  /* ---------------- Visit form handling ---------------- */
+  var needsReferral = document.getElementById('needsReferral');
+  var referralFields = document.getElementById('referralFields');
+  needsReferral.addEventListener('change', function(){ referralFields.classList.toggle('show', needsReferral.checked); });
+
+  var needsDiagnostic = document.getElementById('needsDiagnostic');
+  var diagnosticFields = document.getElementById('diagnosticFields');
+  needsDiagnostic.addEventListener('change', function(){ diagnosticFields.classList.toggle('show', needsDiagnostic.checked); });
+
+  var needsVaccine = document.getElementById('needsVaccine');
+  var vaccineFields = document.getElementById('vaccineFields');
+  var vaccineLine = document.getElementById('vaccineLine');
+  needsVaccine.addEventListener('change', function(){ vaccineFields.classList.toggle('show', needsVaccine.checked); });
+  document.getElementById('pCategory').addEventListener('change', function(){
+    var isChild = this.value === 'Child';
+    vaccineLine.style.display = isChild ? 'flex' : 'none';
+    if(!isChild){ needsVaccine.checked = false; vaccineFields.classList.remove('show'); }
+  });
+
+  document.getElementById('visitForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('pName').value.trim();
+    var age = document.getElementById('pAge').value;
+    var village = document.getElementById('pVillage').value.trim();
+    var category = document.getElementById('pCategory').value;
+    var notes = document.getElementById('pNotes').value.trim();
+    if(!name || !village || !notes) return;
+
+    var signs = document.querySelectorAll('.triageSign:checked').length;
+    var triageLevel = signs > 0 ? 'Emergency' : (category !== 'General' ? 'Priority' : 'Routine');
+
+    var visit = { id: uid(), date: new Date().toISOString(), notes: notes, referral: null, triage: { level: triageLevel } };
+
+    if(needsReferral.checked){
+      var reason = document.getElementById('refReason').value.trim() || 'Not specified';
+      var to = document.getElementById('refTo').value;
+      visit.referral = { id: uid(), reason: reason, to: to, status: 'pending', createdAt: visit.date };
+    }
+
+    var vaccineDose = null;
+    if(category === 'Child' && needsVaccine.checked){
+      vaccineDose = { id: uid(), name: document.getElementById('vaccName').value, givenOn: visit.date, nextDue: document.getElementById('vaccNextDue').value || null };
+    }
+
+    var existing = DATA.patients.find(function(p){
+      return p.name.toLowerCase() === name.toLowerCase() && p.village.toLowerCase() === village.toLowerCase();
+    });
+
+    var patientRef;
+    if(existing){
+      existing.age = age || existing.age;
+      existing.category = category;
+      existing.visits.push(visit);
+      if(vaccineDose){ existing.vaccinations = existing.vaccinations || []; existing.vaccinations.push(vaccineDose); }
+      patientRef = existing;
+    } else {
+      var newPatient = { id: uid(), name: name, age: age, village: village, category: category, visits: [visit], vaccinations: [], emergency: false };
+      if(vaccineDose) newPatient.vaccinations.push(vaccineDose);
+      DATA.patients.push(newPatient);
+      patientRef = newPatient;
+    }
+
+    if(triageLevel === 'Emergency') patientRef.emergency = true;
+
+    if(needsDiagnostic.checked){
+      DATA.diagnostics.push({ id: uid(), patientName: name, test: document.getElementById('diagTest').value, status: 'ordered', orderedAt: visit.date, result: '' });
+    }
+
+    saveData();
+    this.reset();
+    referralFields.classList.remove('show');
+    diagnosticFields.classList.remove('show');
+    vaccineFields.classList.remove('show');
+    vaccineLine.style.display = 'none';
+    renderAll();
+
+    var savedMsg = (triageLevel === 'Emergency') ? 'Saved — flagged as Emergency' : (existing ? 'Visit added to existing record.' : 'New patient registered.');
+    announce(savedMsg);
+  });
+
+  function announce(msg){
+    var btn = document.querySelector('#visitForm button[type="submit"]');
+    var original = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = original; }, 1800);
+  }
+
+  document.getElementById('patientSearch').addEventListener('input', function(){ renderPatientList(this.value); });
+
+  /* ---------------- Appointment form ---------------- */
+  document.getElementById('aDate').value = todayStr();
+  document.getElementById('apptForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('aName').value.trim();
+    var village = document.getElementById('aVillage').value.trim();
+    var date = document.getElementById('aDate').value;
+    var time = document.getElementById('aTime').value;
+    var reason = document.getElementById('aReason').value.trim();
+    if(!name || !village || !date || !time) return;
+    DATA.appointments.push({ id: uid(), name: name, village: village, date: date, time: time, reason: reason, status: 'waiting', createdAt: new Date().toISOString() });
+    saveData();
+    this.reset();
+    document.getElementById('aDate').value = todayStr();
+    renderQueue();
+  });
+
+  /* ---------------- Medicine add form ---------------- */
+  document.getElementById('medForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var input = document.getElementById('medName');
+    var name = input.value.trim();
+    if(!name) return;
+    DATA.medicines.push({ id: uid(), name: name, status: 'available' });
+    saveData();
+    input.value = '';
+    renderMedicine();
+  });
+
+  /* ---------------- Reset ---------------- */
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if(confirm('Reset all demo data back to the starting sample? This clears anything you have added.')){
+      DATA = seedData();
+      DATA.appointments = DATA.appointments || [];
+      DATA.diagnostics = DATA.diagnostics || [];
+      DATA.medicines = DATA.medicines || [];
+      saveData();
+      renderAll();
+    }
+  });
+
+  /* ---------------- Tabs ---------------- */
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('view-' + btn.getAttribute('data-view')).classList.add('active');
+      renderAll();
+    });
+  });
+
+  applyLanguage(currentLang);
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
